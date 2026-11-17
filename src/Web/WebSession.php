@@ -151,7 +151,10 @@ class WebSession
     {
         $options = $until === null ? [] : ['json' => ['until' => $until->getTimestamp()]];
 
-        return $this->client->request('POST', "sessions/{$this->sessionId}/chats/".rawurlencode($chatId).'/mute', $options);
+        /** @var array{ok: bool, isMuted: bool, muteExpiration: int} $response  shape defined by sidecar/index.js */
+        $response = $this->client->request('POST', "sessions/{$this->sessionId}/chats/".rawurlencode($chatId).'/mute', $options);
+
+        return $response;
     }
 
     /**
@@ -159,7 +162,10 @@ class WebSession
      */
     public function unmuteChat(string $chatId): array
     {
-        return $this->client->request('POST', "sessions/{$this->sessionId}/chats/".rawurlencode($chatId).'/unmute');
+        /** @var array{ok: bool, isMuted: bool, muteExpiration: int} $response  shape defined by sidecar/index.js */
+        $response = $this->client->request('POST', "sessions/{$this->sessionId}/chats/".rawurlencode($chatId).'/unmute');
+
+        return $response;
     }
 
     /**

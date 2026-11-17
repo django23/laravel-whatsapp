@@ -52,7 +52,10 @@ class ContactsResource extends Resource
      */
     public function block(string $contactId): array
     {
-        return $this->request('POST', "{$this->endpoint()}/".rawurlencode($contactId).'/block');
+        /** @var array{ok: bool, isBlocked: bool} $response  shape defined by sidecar/index.js */
+        $response = $this->request('POST', "{$this->endpoint()}/".rawurlencode($contactId).'/block');
+
+        return $response;
     }
 
     /**
@@ -60,6 +63,9 @@ class ContactsResource extends Resource
      */
     public function unblock(string $contactId): array
     {
-        return $this->request('POST', "{$this->endpoint()}/".rawurlencode($contactId).'/unblock');
+        /** @var array{ok: bool, isBlocked: bool} $response  shape defined by sidecar/index.js */
+        $response = $this->request('POST', "{$this->endpoint()}/".rawurlencode($contactId).'/unblock');
+
+        return $response;
     }
 }
