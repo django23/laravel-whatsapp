@@ -31,6 +31,19 @@ class GroupsResource extends Resource
     }
 
     /**
+     * Join a group through its invite. Accepts the code or the full
+     * https://chat.whatsapp.com/… link.
+     *
+     * @return array{ok: bool, id: string} id is the joined group's chat ID
+     */
+    public function join(string $invite): array
+    {
+        return $this->request('POST', "{$this->endpoint()}/join", [
+            'json' => compact('invite'),
+        ]);
+    }
+
+    /**
      * @param  array<int, string>  $participants
      * @return array<string, mixed>
      */
@@ -123,6 +136,56 @@ class GroupsResource extends Resource
     {
         return $this->request('PUT', "{$this->endpoint()}/".rawurlencode($groupId).'/subject', [
             'json' => compact('subject'),
+        ]);
+    }
+
+    /**
+     * Only admins can send messages. Requires admin rights.
+     *
+     * @return array{ok: bool, adminsOnly: bool}
+     */
+    public function restrictMessagesToAdmins(string $groupId): array
+    {
+        return $this->updateSetting($groupId, 'messages', adminsOnly: true);
+    }
+
+    /**
+     * Every participant can send messages again. Requires admin rights.
+     *
+     * @return array{ok: bool, adminsOnly: bool}
+     */
+    public function openMessagesToAll(string $groupId): array
+    {
+        return $this->updateSetting($groupId, 'messages', adminsOnly: false);
+    }
+
+    /**
+     * Only admins can edit the subject, description and picture. Requires admin rights.
+     *
+     * @return array{ok: bool, adminsOnly: bool}
+     */
+    public function restrictInfoToAdmins(string $groupId): array
+    {
+        return $this->updateSetting($groupId, 'info', adminsOnly: true);
+    }
+
+    /**
+     * Every participant can edit the group info again. Requires admin rights.
+     *
+     * @return array{ok: bool, adminsOnly: bool}
+     */
+    public function openInfoToAll(string $groupId): array
+    {
+        return $this->updateSetting($groupId, 'info', adminsOnly: false);
+    }
+
+    /**
+     * @return array{ok: bool, adminsOnly: bool}
+     */
+    protected function updateSetting(string $groupId, string $setting, bool $adminsOnly): array
+    {
+        return $this->request('PUT', "{$this->endpoint()}/".rawurlencode($groupId)."/settings/{$setting}", [
+            'json' => compact('adminsOnly'),
         ]);
     }
 }
